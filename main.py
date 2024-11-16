@@ -6,8 +6,14 @@ from PIL import Image, ImageTk
 import os
 import sqlite3
 import database
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+def connect_db():
+    # Obtiene la ruta absoluta del archivo .py
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, "mendoza_tour.db")
+    return sqlite3.connect(db_path)
 
-# Crear tablas y usuario por defecto al iniciar el programa
+
 database.create_tables()  
 database.add_user("admin", "admin")  
 database.add_user("cliente", "cliente") 
@@ -18,13 +24,27 @@ def apply_styles(widget):
 
 # Ventana de Login y de Vendedor/Cliente
 def login_window():
+    # Obtener la ruta absoluta del directorio donde se encuentra el archivo .py
+    script_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde está el script
+    
+    # Construir la ruta al archivo de icono
+    icon_path = os.path.join(script_dir, "images", "logo.ico")
+
     login_win = tk.Tk()
     login_win.title("Login")
     login_win.geometry("300x250")
     login_win.config(bg="#e5e5e5")
-    login_win.iconbitmap("images/logo.ico")
+    #login_win.iconbitmap("images/logo.ico")
+    #login_win.overrideredirect(True)
+    try:
+        login_win.iconbitmap(icon_path)
+    except Exception as e:
+        print(f"Error al cargar el icono: {e}")
 
-    fondo_imagen = Image.open("images/parque_san_martin.jpg")  # Ruta de la imagen de fondo
+        # Construir la ruta al archivo de la imagen de fondo
+    fondo_path = os.path.join(script_dir, "images", "parque_san_martin.jpg")
+
+    fondo_imagen = Image.open(fondo_path)  # Ruta de la imagen de fondo
     fondo_imagen = fondo_imagen.resize((300, 250))  # Ajustar el tamaño de la imagen
     fondo_photo = ImageTk.PhotoImage(fondo_imagen)
     fondo_label = tk.Label(login_win, image=fondo_photo)
@@ -58,14 +78,19 @@ def login_window():
 
 # Función para la ventana principal del vendedor
 def main_seller_window(username):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(script_dir, "images", "logo.ico")
+
     main_win = tk.Tk()
     main_win.title("Sistema de Ventas - Mendoza Tours (Vendedor)")
     main_win.geometry("600x500")
     main_win.config(bg="#f1f1f1")
-    main_win.iconbitmap("images/logo.ico")
-
+    #main_win.iconbitmap("images/logo.ico")
+    #main_win.overrideredirect(True)
     # Imagen de fondo
-    img_path = "images/bodega_mendoza.jpg"
+    fondo_path = os.path.join(script_dir, "images", "bodega_mendoza.jpg")
+
+    img_path = fondo_path
     if not os.path.exists(img_path):
         messagebox.showerror("Error", f"No se encontró la imagen en la ruta: {img_path}")
         return
@@ -117,13 +142,17 @@ def main_seller_window(username):
 
 # Función para la ventana del cliente
 def main_client_window(username):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(script_dir, "images", "logo.ico")
+
     main_win = tk.Tk()
     main_win.title("Sistema de Ventas - Mendoza Tours (Cliente)")
     main_win.geometry("600x500")
     main_win.config(bg="#f1f1f1")
-    main_win.iconbitmap("images/logo.ico")
+    #main_win.iconbitmap("images/logo.ico")
 
-    img_path = "images/bodega_mendoza.jpg"
+    fondo_path = os.path.join(script_dir, "images", "bodega_mendoza.jpg")
+    img_path = fondo_path
     if not os.path.exists(img_path):
         messagebox.showerror("Error", f"No se encontró la imagen en la ruta: {img_path}")
         return
@@ -163,6 +192,9 @@ def main_client_window(username):
     productos_menu.add_command(label="Realizar pedido", command=realizar_venta)
 
     main_win.mainloop()
+
+db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mendoza_tour.db")
+
 
 # Función para agregar un producto
 def agregar_producto():
